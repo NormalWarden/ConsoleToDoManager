@@ -118,7 +118,6 @@ void readAll(std::fstream& file)
 
 void newTask(std::fstream& file, std::string name, int priority)
 {
-    #pragma warning(disable : 4996)
     file.clear();
     file.seekp(0, std::ios::end);
 
