@@ -6,8 +6,8 @@
 #define FILE_NAME "tasks.txt"
 
 void readAll(std::fstream& file);
-void newTask(std::fstream& file, std::string name, int priority);
-void changeTask(std::fstream& file, int lineNumber, std::string name, int priority);
+void newTask(std::fstream& file, std::string description, int priority);
+void changeTask(std::fstream& file, int lineNumber, std::string description, int priority);
 void deleteTask(std::fstream& file, int lineNumber);
 std::string textCleanCarriageReturn(std::string text);
 void fileFill(std::fstream& file, std::string text);
@@ -25,7 +25,7 @@ int main()
         fileMain.open(FILE_NAME, std::ios::in | std::ios::out);
     }
 
-    std::string taskName;
+    std::string taskDescription;
     int taskPriority{}, selectedLine{}, changeMode{};
 
     char answer{};
@@ -39,7 +39,7 @@ int main()
             << "5. Exit\n";
         std::cin >> answer;
 
-        taskName = "0";
+        taskDescription = "0";
         taskPriority = 0;
         selectedLine = 0;
         changeMode = 0;
@@ -50,31 +50,31 @@ int main()
             readAll(fileMain);
             break;
         case '2': // write new task
-            std::cout << "Enter the task name: ";
-            std::cin >> taskName;
+            std::cout << "Enter the task description: ";
+            std::getline(std::cin >> std::ws, taskDescription);
             std::cout << "Enter the task priority: ";
             std::cin >> taskPriority;
-            newTask(fileMain, taskName, taskPriority);
+            newTask(fileMain, taskDescription, taskPriority);
             break;
         case '3': // change task
             std::cout << "Which task do you want change (0 if no one): ";
             std::cin >> selectedLine;
-            std::cout << "What do you want to change (task name = 1, task priority = 2, all = 3): ";
+            std::cout << "What do you want to change (task description = 1, task priority = 2, all = 3): ";
             std::cin >> changeMode;
 
             switch (changeMode)
             {
-            case 1: // change only task name
-                std::cout << "Enter the task name: ";
-                std::cin >> taskName;
+            case 1: // change only task description
+                std::cout << "Enter the task description: ";
+                std::getline(std::cin >> std::ws, taskDescription);
                 break;
             case 2: // change only task priority
                 std::cout << "Enter the task priority: ";
                 std::cin >> taskPriority;
                 break;
-            case 3: // change task name and priority
-                std::cout << "Enter the task name: ";
-                std::cin >> taskName;
+            case 3: // change task description and priority
+                std::cout << "Enter the task description: ";
+                std::getline(std::cin >> std::ws, taskDescription);
                 std::cout << "Enter the task priority: ";
                 std::cin >> taskPriority;
                 break;
@@ -82,7 +82,7 @@ int main()
                 std::cout << "Invalid input";
             }
 
-            changeTask(fileMain, selectedLine, taskName, taskPriority);
+            changeTask(fileMain, selectedLine, taskDescription, taskPriority);
             break;
         case '4': // delete task
             std::cout << "Which task do you want delete (0 if no one): ";
@@ -116,19 +116,19 @@ void readAll(std::fstream& file)
     std::cout << "------------------------------\n";
 }
 
-void newTask(std::fstream& file, std::string name, int priority)
+void newTask(std::fstream& file, std::string description, int priority)
 {
     file.clear();
     file.seekp(0, std::ios::end);
 
     std::time_t time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()); // get raw time
-    file << name << " | " << "priority: " << priority << " | " << std::ctime(&time);
+    file << description << " | " << "priority: " << priority << " | " << std::ctime(&time);
 }
 
-void changeTask(std::fstream& file, int lineNumber, std::string name, int priority)
+void changeTask(std::fstream& file, int lineNumber, std::string description, int priority)
 {
     // if no choice
-    if (name == "0" and priority == 0)
+    if (description == "0" and priority == 0)
         return;
 
     file.clear();
@@ -142,8 +142,8 @@ void changeTask(std::fstream& file, int lineNumber, std::string name, int priori
         ++i;
         if (lineNumber == i) // correct line for changing
         {
-            if (name != "0") // user entered new name
-                lineIter.replace(0, lineIter.find(" | "), name);
+            if (description != "0") // user entered new description
+                lineIter.replace(0, lineIter.find(" | "), description);
             if (priority != 0)  // user entered new priority
                 lineIter.replace(lineIter.find(" | ") + 13, lineIter.find(" | ", lineIter.find(" | ") + 3) - lineIter.find(" | ") - 13, std::to_string(priority)); // moving from first " | " to 13 positions for changing priority. 13 = 3 (" | ") + 10 ("priority: ")
         }
